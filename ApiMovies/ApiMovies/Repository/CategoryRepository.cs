@@ -26,6 +26,7 @@ namespace ApiMovies.Repository
         public bool CreateCategory(Category category)
         {
             category.CreatedAt = DateTime.Now;
+            category.UpdatedAt = null;
             _db.Categories.Add(category);
             return Save();
         }
