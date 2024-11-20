@@ -23,7 +23,7 @@ namespace ApiMovies.Controllers
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public IActionResult getCategories() 
+        public IActionResult GetCategories() 
         {
             var categories = _categoryRepository.GetAll();
             var categoriesDto = new List<CategoryDto>();
@@ -31,6 +31,24 @@ namespace ApiMovies.Controllers
                 categoriesDto.Add(_mapper.Map<CategoryDto>(category));
             }
             return Ok(categoriesDto);
+        }
+
+        [HttpGet("{id:int}", Name ="GetCategoryById")]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public IActionResult GetCategoryById(int id)
+        {
+            var category = _categoryRepository.GetCategoryById(id);
+            if (category == null)
+            {
+                return NotFound();
+            }
+
+            var categoryDto = _mapper.Map<CategoryDto>(category);
+            
+            return Ok(categoryDto);
         }
     }
 }
