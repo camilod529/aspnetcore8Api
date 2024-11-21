@@ -11,5 +11,6 @@ namespace ApiMovies.Data
 
         // Todas las entidades (modelos)
         public DbSet<Category> Categories { get; set; }
+        public DbSet<Movie> Movies { get; set; }
     }
 }
