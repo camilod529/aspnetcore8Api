@@ -3,7 +3,6 @@ using ApiMovies.Models.Dtos;
 using ApiMovies.Repository.IRepository;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApiMovies.Controllers
@@ -11,6 +10,7 @@ namespace ApiMovies.Controllers
     //[Route("api/[controller]")] // Opcion estatica
     [Route("api/category")] // opcion dinamica
     [ApiController]
+    //[ResponseCache(Duration = 20)] // A nivel de controlador, 20 segundos dura el chache
     //[Authorize(Roles = "admin")] // Añade autenticacion a nivel de controlador
     public class CategoriesController : ControllerBase
     {
@@ -25,6 +25,7 @@ namespace ApiMovies.Controllers
 
         [HttpGet]
         // [AllowAnonymous] // Permite usar el endpoint aunque la clase este protegida
+        [ResponseCache(Duration = 20)] /*Reduce la carga del servidor*/
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public IActionResult GetCategories()
@@ -58,6 +59,7 @@ namespace ApiMovies.Controllers
 
         [HttpPost]
         [Authorize(Roles = "admin")]
+        [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]

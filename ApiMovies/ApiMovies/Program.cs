@@ -15,6 +15,9 @@ var key = builder.Configuration.GetValue<string>("ApiSettings:secret");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("SqlConnection")));
 
+// cache soport
+builder.Services.AddResponseCaching();
+
 //Add repositories
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IMovieRepository, MovieRepository>();
