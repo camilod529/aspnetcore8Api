@@ -91,6 +91,7 @@ namespace ApiMovies.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult UpdatePatchCategory(int id, [FromBody] UpdateCategoryDto updateCategoryDto)
         {
@@ -111,6 +112,50 @@ namespace ApiMovies.Controllers
             }
 
             var existingCategory = _categoryRepository.GetCategoryById(id);
+
+            if (existingCategory == null)
+            {
+                return NotFound();
+            }
+
+            _mapper.Map(updateCategoryDto, existingCategory);
+            existingCategory.UpdatedAt = DateTime.Now;
+
+            if (!_categoryRepository.UpdateCategory(existingCategory))
+            {
+                ModelState.AddModelError("message", $"Algo salio mal actualizando el registro {existingCategory.Name}");
+                return StatusCode(500, ModelState);
+            }
+
+            return NoContent();
+        }
+
+        [HttpPut("{id:int}", Name = "UpdatePutCategory")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult UpdatePutCategory(int id, [FromBody] UpdateCategoryDto updateCategoryDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (updateCategoryDto == null || updateCategoryDto.Id != id)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (_categoryRepository.CategoryExists(updateCategoryDto.Name))
+            {
+                ModelState.AddModelError("message", $"Ya existe una categoria con el nombre {updateCategoryDto.Name}");
+                return BadRequest(ModelState);
+            }
+
+            var existingCategory = _categoryRepository.GetCategoryById(id);
+
             if (existingCategory == null)
             {
                 return NotFound();
