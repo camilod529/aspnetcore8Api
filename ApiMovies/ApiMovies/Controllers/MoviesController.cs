@@ -178,5 +178,28 @@ namespace ApiMovies.Controllers
 
             return Ok(moviesDto);
         }
+
+        // Asi se crean peticiones para detectar queryParams
+        [HttpGet("search")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult SearchMovies(string query)
+        {
+            try
+            {
+                var res = _movieRepository.SearchMovie(query);
+                if (res.Count != 0)
+                {
+                    return Ok(res);
+                }
+                return NotFound();
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error buscando peliculas por el termino {query}");
+            }
+        }
     }
 }
