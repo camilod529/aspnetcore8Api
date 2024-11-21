@@ -3,6 +3,7 @@ using ApiMovies.Models.Dtos;
 using ApiMovies.Repository;
 using ApiMovies.Repository.IRepository;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,6 +23,7 @@ namespace ApiMovies.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public IActionResult GetMovies()
@@ -36,6 +38,7 @@ namespace ApiMovies.Controllers
         }
 
         [HttpGet("{id:int}", Name = "GetMovieById")]
+        [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -49,12 +52,13 @@ namespace ApiMovies.Controllers
                 return NotFound();
             }
 
-            var movieDto = _mapper.Map<CategoryDto>(movie);
+            var movieDto = _mapper.Map<MovieDto>(movie);
 
             return Ok(movieDto);
         }
 
         [HttpPost]
+        [Authorize(Roles = "admin")]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(MovieDto))]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -90,6 +94,7 @@ namespace ApiMovies.Controllers
         }
 
         [HttpPatch("{id:int}", Name = "UpdatePatchMovie")]
+        [Authorize(Roles = "admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -133,6 +138,7 @@ namespace ApiMovies.Controllers
         }
 
         [HttpDelete("{id:int}", Name = "DeleteMovie")]
+        [Authorize(Roles = "admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -157,6 +163,7 @@ namespace ApiMovies.Controllers
         }
 
         [HttpGet("GetMoviesInCategory/{categoryId:int}")]
+        [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -181,6 +188,7 @@ namespace ApiMovies.Controllers
 
         // Asi se crean peticiones para detectar queryParams
         [HttpGet("search")]
+        [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

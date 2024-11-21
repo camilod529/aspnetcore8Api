@@ -2,6 +2,7 @@
 using ApiMovies.Models.Dtos;
 using ApiMovies.Repository.IRepository;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,6 +11,7 @@ namespace ApiMovies.Controllers
     //[Route("api/[controller]")] // Opcion estatica
     [Route("api/category")] // opcion dinamica
     [ApiController]
+    //[Authorize(Roles = "admin")] // Añade autenticacion a nivel de controlador
     public class CategoriesController : ControllerBase
     {
         private readonly ICategoryRepository _categoryRepository;
@@ -22,6 +24,7 @@ namespace ApiMovies.Controllers
         }
 
         [HttpGet]
+        // [AllowAnonymous] // Permite usar el endpoint aunque la clase este protegida
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public IActionResult GetCategories()
@@ -54,6 +57,7 @@ namespace ApiMovies.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "admin")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -88,6 +92,7 @@ namespace ApiMovies.Controllers
         }
 
         [HttpPatch("{id:int}", Name = "UpdatePatchCategory")]
+        [Authorize(Roles = "admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -131,6 +136,7 @@ namespace ApiMovies.Controllers
         }
 
         [HttpPut("{id:int}", Name = "UpdatePutCategory")]
+        [Authorize(Roles = "admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -174,6 +180,7 @@ namespace ApiMovies.Controllers
         }
 
         [HttpDelete("{id:int}", Name = "DeletetCategory")]
+        [Authorize(Roles = "admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
