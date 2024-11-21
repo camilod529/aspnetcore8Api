@@ -10,6 +10,7 @@ namespace ApiMovies.Models.Dtos
         public string UserName { get; set; }
         [Required(ErrorMessage = "La contraseña es obligatoria")]
         public string Password { get; set; }
+        public string Role {  get; set; }
         
     }
 }

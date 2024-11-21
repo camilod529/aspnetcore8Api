@@ -3,12 +3,12 @@ using ApiMovies.Models.Dtos;
 
 namespace ApiMovies.Repository.IRepository
 {
-    public interface IuserRepository
+    public interface IUserRepository
     {
         ICollection<User> GetUsers();
         User GetUserById(int id);
         bool IsUniqueUser(string username);
         Task<LoginResponseDto> Login(LoginUserDto loginUserDto);
-        Task<UserDataDto> Register(CreateUserDto createUserDto);
+        Task<User> Register(CreateUserDto createUserDto);
     }
 }

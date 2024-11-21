@@ -2,6 +2,7 @@
 using ApiMovies.Models;
 using ApiMovies.Models.Dtos;
 using ApiMovies.Repository.IRepository;
+using XSystem.Security.Cryptography;
 
 namespace ApiMovies.Repository
 {
@@ -34,9 +35,37 @@ namespace ApiMovies.Repository
             throw new NotImplementedException();
         }
 
-        public Task<UserDataDto> Register(CreateUserDto createUserDto)
+        public async Task<User> Register(CreateUserDto createUserDto)
         {
-            throw new NotImplementedException();
+            var encriptedPassword = getmd5(createUserDto.Password);
+
+            User user = new()
+            {
+                UserName = createUserDto.UserName,
+                Password = encriptedPassword,
+                Name = createUserDto.Name,
+                Role = createUserDto.Role,
+                CreatedAt = DateTime.Now,
+            };
+
+            _db.Users.Add(user);
+            await _db.SaveChangesAsync();
+             user.Password = encriptedPassword;
+            return user;
+        }
+
+        // Encrypt password
+        private static string getmd5(string password)
+        {
+            MD5CryptoServiceProvider x = new();
+            byte[] data = System.Text.Encoding.UTF8.GetBytes(password);
+            data = x.ComputeHash(data);
+            string res = "";
+            for (int i = 0; i < data.Length; i++)
+            {
+                res += data[i].ToString("x2").ToLower();
+            }
+            return res;
         }
     }
 }
