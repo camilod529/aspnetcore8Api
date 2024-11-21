@@ -14,12 +14,12 @@ namespace ApiMovies.Controllers.V1
     //[ResponseCache(Duration = 20)] // A nivel de controlador, 20 segundos dura el chache
     //[Authorize(Roles = "admin")] // Añade autenticacion a nivel de controlador
     [ApiVersion("1.0")]
-    public class CategoriesV1Controller : ControllerBase
+    public class CategoriesController : ControllerBase
     {
         private readonly ICategoryRepository _categoryRepository;
         private readonly IMapper _mapper;
 
-        public CategoriesV1Controller(ICategoryRepository categoryRepository, IMapper mapper)
+        public CategoriesController(ICategoryRepository categoryRepository, IMapper mapper)
         {
             _categoryRepository = categoryRepository;
             _mapper = mapper;

@@ -13,12 +13,12 @@ namespace ApiMovies.Controllers.V1
     [Route("api/v{version:apiVersion}/movies")]
     [ApiController]
     [ApiVersion("1.0")]
-    public class MoviesV1Controller : ControllerBase
+    public class MoviesController : ControllerBase
     {
         private readonly IMovieRepository _movieRepository;
         private readonly IMapper _mapper;
 
-        public MoviesV1Controller(IMovieRepository movieRepository, IMapper mapper)
+        public MoviesController(IMovieRepository movieRepository, IMapper mapper)
         {
             _movieRepository = movieRepository;
             _mapper = mapper;

@@ -14,13 +14,13 @@ namespace ApiMovies.Controllers.V1
     [Route("api/v{version:apiVersion}/users")]
     [ApiController]
     [ApiVersion("1.0")]
-    public class UsersV1Controller : ControllerBase
+    public class UsersController : ControllerBase
     {
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
         protected ApiResponses _apiResponses;
 
-        public UsersV1Controller(IUserRepository userRepository, IMapper mapper)
+        public UsersController(IUserRepository userRepository, IMapper mapper)
         {
             _userRepository = userRepository;
             _mapper = mapper;

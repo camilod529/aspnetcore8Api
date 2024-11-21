@@ -12,12 +12,12 @@ namespace ApiMovies.Controllers.V2
     [Route("api/v{version:apiVersion}/category")]
     [ApiController]
     [ApiVersion("2.0")]
-    public class CategoriesV2Controller : ControllerBase
+    public class CategoriesController : ControllerBase
     {
         private readonly ICategoryRepository _categoryRepository;
         private readonly IMapper _mapper;
 
-        public CategoriesV2Controller(ICategoryRepository categoryRepository, IMapper mapper)
+        public CategoriesController(ICategoryRepository categoryRepository, IMapper mapper)
         {
             _categoryRepository = categoryRepository;
             _mapper = mapper;
