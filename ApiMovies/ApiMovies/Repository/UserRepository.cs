@@ -71,6 +71,7 @@ namespace ApiMovies.Repository
             {
                 Token = jwtTokenHandler.WriteToken(token),
                 User = user,
+                Role = user.Role
             };
 
             return loginResponseDto;
