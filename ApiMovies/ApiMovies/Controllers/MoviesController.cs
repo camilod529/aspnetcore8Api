@@ -155,5 +155,28 @@ namespace ApiMovies.Controllers
 
             return NoContent();
         }
+
+        [HttpGet("GetMoviesInCategory/{categoryId:int}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult GetMoviesInCategory(int categoryId)
+        {
+            var movies = _movieRepository.GetMoviesByCategory(categoryId);
+
+            if (movies == null)
+            {
+                return NotFound();
+            }
+
+            var moviesDto = new List<MovieDto>();
+            foreach (var movie in movies)
+            {
+                moviesDto.Add(_mapper.Map<MovieDto>(movie));
+            }
+
+            return Ok(moviesDto);
+        }
     }
 }
