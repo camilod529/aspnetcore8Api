@@ -9,18 +9,18 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
-namespace ApiMovies.Controllers
+namespace ApiMovies.Controllers.V1
 {
     [Route("api/v{version:apiVersion}/users")]
     [ApiController]
     [ApiVersion("1.0")]
-    public class UsersController : ControllerBase
+    public class UsersV1Controller : ControllerBase
     {
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
         protected ApiResponses _apiResponses;
 
-        public UsersController(IUserRepository userRepository, IMapper mapper)
+        public UsersV1Controller(IUserRepository userRepository, IMapper mapper)
         {
             _userRepository = userRepository;
             _mapper = mapper;
@@ -101,7 +101,7 @@ namespace ApiMovies.Controllers
         {
             var loginResponse = await _userRepository.Login(loginUserDto);
 
-            if (loginResponse.User == null || string.IsNullOrEmpty(loginResponse.Token)) 
+            if (loginResponse.User == null || string.IsNullOrEmpty(loginResponse.Token))
             {
                 _apiResponses.StatusCode = HttpStatusCode.BadRequest;
                 _apiResponses.IsSuccess = false;

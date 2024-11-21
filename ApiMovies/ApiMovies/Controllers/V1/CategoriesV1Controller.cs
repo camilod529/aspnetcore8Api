@@ -6,7 +6,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ApiMovies.Controllers
+namespace ApiMovies.Controllers.V1
 {
     //[Route("api/[controller]")] // Opcion estatica
     [Route("api/v{version:apiVersion}/category")] // opcion dinamica
@@ -14,13 +14,12 @@ namespace ApiMovies.Controllers
     //[ResponseCache(Duration = 20)] // A nivel de controlador, 20 segundos dura el chache
     //[Authorize(Roles = "admin")] // Añade autenticacion a nivel de controlador
     [ApiVersion("1.0")]
-    [ApiVersion("2.0")]
-    public class CategoriesController : ControllerBase
+    public class CategoriesV1Controller : ControllerBase
     {
         private readonly ICategoryRepository _categoryRepository;
         private readonly IMapper _mapper;
 
-        public CategoriesController(ICategoryRepository categoryRepository, IMapper mapper)
+        public CategoriesV1Controller(ICategoryRepository categoryRepository, IMapper mapper)
         {
             _categoryRepository = categoryRepository;
             _mapper = mapper;
@@ -29,10 +28,10 @@ namespace ApiMovies.Controllers
         [HttpGet]
         // [AllowAnonymous] // Permite usar el endpoint aunque la clase este protegida
         //[ResponseCache(Duration = 20)] /*Reduce la carga del servidor*/
+        //[MapToApiVersion("1.0")]
         [ResponseCache(CacheProfileName = "DefaultCache")] /*Cache de perfil*/
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [MapToApiVersion("1.0")]
         public IActionResult GetCategories()
         {
             var categories = _categoryRepository.GetAll();
@@ -42,13 +41,6 @@ namespace ApiMovies.Controllers
                 categoriesDto.Add(_mapper.Map<CategoryDto>(category));
             }
             return Ok(categoriesDto);
-        }
-
-        [HttpGet]
-        [MapToApiVersion("2.0")]
-        public IEnumerable<string> Get()
-        {
-            return ["Valor1", "valor2"];
         }
 
         [HttpGet("{id:int}", Name = "GetCategoryById")]
