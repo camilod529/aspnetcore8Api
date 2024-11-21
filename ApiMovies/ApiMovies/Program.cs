@@ -2,6 +2,7 @@ using ApiMovies.Data;
 using ApiMovies.MoviesMappers;
 using ApiMovies.Repository;
 using ApiMovies.Repository.IRepository;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,25 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 var key = builder.Configuration.GetValue<string>("ApiSettings:secret");
+
+// version support
+var apiVersioningBuilder = builder.Services.AddApiVersioning(option =>
+{
+    option.AssumeDefaultVersionWhenUnspecified = true;
+    option.DefaultApiVersion = new ApiVersion(1, 0);
+    option.ReportApiVersions = true;
+    option.ApiVersionReader = ApiVersionReader.Combine(
+        new QueryStringApiVersionReader("api-version")//?api-version=1.0
+    /* new HeaderApiVersionReader("api-version")
+     new MediaTypeApiVersionReader("api-version)*/
+    );
+});
+
+apiVersioningBuilder.AddApiExplorer(option =>
+{
+    option.GroupNameFormat = "'v'VVV";
+});
+
 // Add services to the container.
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("SqlConnection")));
