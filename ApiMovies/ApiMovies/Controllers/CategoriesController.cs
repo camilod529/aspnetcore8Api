@@ -9,11 +9,12 @@ using Microsoft.AspNetCore.Mvc;
 namespace ApiMovies.Controllers
 {
     //[Route("api/[controller]")] // Opcion estatica
-    [Route("api/category")] // opcion dinamica
+    [Route("api/v{version:apiVersion}/category")] // opcion dinamica
     [ApiController]
     //[ResponseCache(Duration = 20)] // A nivel de controlador, 20 segundos dura el chache
     //[Authorize(Roles = "admin")] // Añade autenticacion a nivel de controlador
-    //[ApiVersion("2.0")]
+    [ApiVersion("1.0")]
+    [ApiVersion("2.0")]
     public class CategoriesController : ControllerBase
     {
         private readonly ICategoryRepository _categoryRepository;
@@ -31,6 +32,7 @@ namespace ApiMovies.Controllers
         [ResponseCache(CacheProfileName = "DefaultCache")] /*Cache de perfil*/
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [MapToApiVersion("1.0")]
         public IActionResult GetCategories()
         {
             var categories = _categoryRepository.GetAll();
@@ -40,6 +42,13 @@ namespace ApiMovies.Controllers
                 categoriesDto.Add(_mapper.Map<CategoryDto>(category));
             }
             return Ok(categoriesDto);
+        }
+
+        [HttpGet]
+        [MapToApiVersion("2.0")]
+        public IEnumerable<string> Get()
+        {
+            return ["Valor1", "valor2"];
         }
 
         [HttpGet("{id:int}", Name = "GetCategoryById")]

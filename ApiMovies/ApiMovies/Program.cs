@@ -20,16 +20,17 @@ var apiVersioningBuilder = builder.Services.AddApiVersioning(option =>
     option.AssumeDefaultVersionWhenUnspecified = true;
     option.DefaultApiVersion = new ApiVersion(1, 0);
     option.ReportApiVersions = true;
-    option.ApiVersionReader = ApiVersionReader.Combine(
-        new QueryStringApiVersionReader("api-version")//?api-version=1.0
-    /* new HeaderApiVersionReader("api-version")
-     new MediaTypeApiVersionReader("api-version)*/
-    );
+    //option.ApiVersionReader = ApiVersionReader.Combine(
+    //    new QueryStringApiVersionReader("api-version")//?api-version=1.0
+    ///* new HeaderApiVersionReader("api-version")
+    // new MediaTypeApiVersionReader("api-version)*/
+    //);
 });
 
 apiVersioningBuilder.AddApiExplorer(option =>
 {
     option.GroupNameFormat = "'v'VVV";
+    option.SubstituteApiVersionInUrl = true;
 });
 
 // Add services to the container.

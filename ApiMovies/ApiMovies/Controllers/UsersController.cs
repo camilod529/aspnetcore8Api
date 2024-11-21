@@ -2,6 +2,7 @@
 using ApiMovies.Models.Dtos;
 using ApiMovies.Repository;
 using ApiMovies.Repository.IRepository;
+using Asp.Versioning;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -10,8 +11,9 @@ using System.Net;
 
 namespace ApiMovies.Controllers
 {
-    [Route("api/users")]
+    [Route("api/v{version:apiVersion}/users")]
     [ApiController]
+    [ApiVersion("1.0")]
     public class UsersController : ControllerBase
     {
         private readonly IUserRepository _userRepository;
