@@ -9,11 +9,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
-namespace ApiMovies.Controllers.V1
+namespace ApiMovies.Controllers
 {
     [Route("api/v{version:apiVersion}/users")]
     [ApiController]
-    [ApiVersion("1.0")]
+    //[ApiVersion("1.0")]
+    [ApiVersionNeutral] // No depende de ninguna version
     public class UsersController : ControllerBase
     {
         private readonly IUserRepository _userRepository;

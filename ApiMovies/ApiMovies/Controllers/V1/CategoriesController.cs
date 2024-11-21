@@ -13,7 +13,8 @@ namespace ApiMovies.Controllers.V1
     [ApiController]
     //[ResponseCache(Duration = 20)] // A nivel de controlador, 20 segundos dura el chache
     //[Authorize(Roles = "admin")] // Añade autenticacion a nivel de controlador
-    [ApiVersion("1.0")]
+    [ApiVersion("1.0"/*, Deprecated = true*/)]
+    //[Obsolete("Este controlador esta obsoleto")]
     public class CategoriesController : ControllerBase
     {
         private readonly ICategoryRepository _categoryRepository;
