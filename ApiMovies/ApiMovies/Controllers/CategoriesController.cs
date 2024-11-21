@@ -24,17 +24,18 @@ namespace ApiMovies.Controllers
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public IActionResult GetCategories() 
+        public IActionResult GetCategories()
         {
             var categories = _categoryRepository.GetAll();
             var categoriesDto = new List<CategoryDto>();
-            foreach (var category in categories) {
+            foreach (var category in categories)
+            {
                 categoriesDto.Add(_mapper.Map<CategoryDto>(category));
             }
             return Ok(categoriesDto);
         }
 
-        [HttpGet("{id:int}", Name ="GetCategoryById")]
+        [HttpGet("{id:int}", Name = "GetCategoryById")]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -48,7 +49,7 @@ namespace ApiMovies.Controllers
             }
 
             var categoryDto = _mapper.Map<CategoryDto>(category);
-            
+
             return Ok(categoryDto);
         }
 
@@ -83,7 +84,48 @@ namespace ApiMovies.Controllers
                 return BadRequest(ModelState);
             }
 
-            return CreatedAtRoute("GetCategoryById", new {id = category.Id}, category);
+            return CreatedAtRoute("GetCategoryById", new { id = category.Id }, category);
+        }
+
+        [HttpPatch("{id:int}", Name = "UpdatePatchCategory")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult UpdatePatchCategory(int id, [FromBody] UpdateCategoryDto updateCategoryDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (updateCategoryDto == null || updateCategoryDto.Id != id)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (_categoryRepository.CategoryExists(updateCategoryDto.Name))
+            {
+                ModelState.AddModelError("message", $"Ya existe una categoria con el nombre {updateCategoryDto.Name}");
+                return BadRequest(ModelState);
+            }
+
+            var existingCategory = _categoryRepository.GetCategoryById(id);
+            if (existingCategory == null)
+            {
+                return NotFound();
+            }
+
+            _mapper.Map(updateCategoryDto, existingCategory);
+            existingCategory.UpdatedAt = DateTime.Now;
+
+            if (!_categoryRepository.UpdateCategory(existingCategory))
+            {
+                ModelState.AddModelError("message", $"Algo salio mal actualizando el registro {existingCategory.Name}");
+                return StatusCode(500, ModelState);
+            }
+
+            return NoContent();
         }
     }
 }
