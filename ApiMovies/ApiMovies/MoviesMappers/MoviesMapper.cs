@@ -13,6 +13,7 @@ namespace ApiMovies.MoviesMappers
             CreateMap<Category, UpdateCategoryDto>().ReverseMap();
             CreateMap<Movie, MovieDto>().ReverseMap();
             CreateMap<Movie, CreateMovieDto>().ReverseMap();
+            CreateMap<Movie, UpdateMovieDto>().ReverseMap();
         }
     }
 }

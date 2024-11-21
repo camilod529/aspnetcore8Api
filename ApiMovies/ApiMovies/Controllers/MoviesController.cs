@@ -88,5 +88,48 @@ namespace ApiMovies.Controllers
 
             return CreatedAtRoute("GetMovieById", new { id = movie.Id }, movie);
         }
+
+        [HttpPatch("{id:int}", Name = "UpdatePatchMovie")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult UpdatePatchMovie(int id, [FromBody] UpdateMovieDto updateMovieDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (updateMovieDto == null || updateMovieDto.Id != id)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (_movieRepository.MovieExists(updateMovieDto.Name))
+            {
+                ModelState.AddModelError("message", $"Ya existe una pelicula con el nombre {updateMovieDto.Name}");
+                return BadRequest(ModelState);
+            }
+
+            var existingMovie = _movieRepository.GetMovieById(id);
+
+            if (existingMovie == null)
+            {
+                return NotFound();
+            }
+
+            _mapper.Map(updateMovieDto, existingMovie);
+            existingMovie.UpdatedAt = DateTime.Now;
+
+            if (!_movieRepository.UpdateMovie(existingMovie))
+            {
+                ModelState.AddModelError("message", $"Algo salio mal actualizando el registro {existingMovie.Name}");
+                return StatusCode(500, ModelState);
+            }
+
+            return NoContent();
+        }
     }
 }
