@@ -131,5 +131,29 @@ namespace ApiMovies.Controllers
 
             return NoContent();
         }
+
+        [HttpDelete("{id:int}", Name = "DeleteMovie")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public IActionResult DeleteMovie(int id)
+        {
+            if (!_movieRepository.MovieExists(id))
+            {
+                return NotFound();
+            }
+
+            var category = _movieRepository.GetMovieById(id);
+
+            if (!_movieRepository.DeleteMovie(category))
+            {
+                ModelState.AddModelError("message", $"Algo salio mal borrando la pelicula {category.Name}");
+                return StatusCode(500, ModelState);
+            }
+
+            return NoContent();
+        }
     }
 }
