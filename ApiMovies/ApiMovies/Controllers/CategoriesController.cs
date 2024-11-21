@@ -25,7 +25,8 @@ namespace ApiMovies.Controllers
 
         [HttpGet]
         // [AllowAnonymous] // Permite usar el endpoint aunque la clase este protegida
-        [ResponseCache(Duration = 20)] /*Reduce la carga del servidor*/
+        //[ResponseCache(Duration = 20)] /*Reduce la carga del servidor*/
+        [ResponseCache(CacheProfileName = "DefaultCache")] /*Cache de perfil*/
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public IActionResult GetCategories()
