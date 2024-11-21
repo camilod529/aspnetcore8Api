@@ -9,6 +9,11 @@ namespace ApiMovies.Repository
     {
         private readonly ApplicationDbContext _db;
 
+        public MovieRepository(ApplicationDbContext db)
+        {
+            _db = db;
+        }
+
         public bool CreateMovie(Movie movie)
         {
             movie.CreatedAt = DateTime.Now;
