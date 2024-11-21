@@ -1,6 +1,7 @@
 ﻿using ApiMovies.Models;
 using ApiMovies.Models.Dtos;
 using ApiMovies.Repository.IRepository;
+using Asp.Versioning;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +13,7 @@ namespace ApiMovies.Controllers
     [ApiController]
     //[ResponseCache(Duration = 20)] // A nivel de controlador, 20 segundos dura el chache
     //[Authorize(Roles = "admin")] // Añade autenticacion a nivel de controlador
+    //[ApiVersion("2.0")]
     public class CategoriesController : ControllerBase
     {
         private readonly ICategoryRepository _categoryRepository;
