@@ -103,6 +103,23 @@ builder.Services.AddSwaggerGen(options =>
                 new List<string>()
             }
         });
+        options.SwaggerDoc("v1", new OpenApiInfo
+        {
+            Version = "v1.0",
+            Title = "MoviesAPI v1",
+            Description = "API de peliculas",
+            TermsOfService = new Uri("https://render2web.com/promociones"),
+            Contact = new OpenApiContact
+            {
+                Name = "Camilo Duran",
+                Url = new Uri("https://render2web.com/promociones"),
+            },
+            License = new OpenApiLicense
+            {
+                Name = "Licencia personal",
+                Url = new Uri("https://render2web.com/promociones"),
+            }
+        });
     }
 );
 
@@ -123,7 +140,10 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(option =>
+    {
+        option.SwaggerEndpoint("/swagger/v1/swagger.json", "ApiMoviesV1");
+    });
 }
 
 // CORS
