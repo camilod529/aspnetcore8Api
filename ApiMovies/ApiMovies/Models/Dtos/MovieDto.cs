@@ -8,12 +8,13 @@ namespace ApiMovies.Models.Dtos
         public string Name { get; set; }
         public string Description { get; set; }
         public int Duration { get; set; }
-        public string ImageRoute { get; set; }
-        public enum ClassificationType
+        public string? ImageRoute { get; set; }
+        public string? LocalImageRoute { get; set; }
+        public enum ClassificationTypeDto
         {
             Seven, Thirteen, Sixteen, Eighteen
         }
-        public ClassificationType Classification { get; set; }
+        public ClassificationTypeDto Classification { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
 

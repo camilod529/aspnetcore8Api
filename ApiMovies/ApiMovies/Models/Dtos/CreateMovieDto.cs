@@ -7,7 +7,8 @@ namespace ApiMovies.Models.Dtos
         public string Name { get; set; }
         public string Description { get; set; }
         public int Duration { get; set; }
-        public string ImageRoute { get; set; }
+        public string? ImageRoute { get; set; }
+        public IFormFile? Image { get; set; }
         public enum CreateClassificationType
         {
             Seven, Thirteen, Sixteen, Eighteen

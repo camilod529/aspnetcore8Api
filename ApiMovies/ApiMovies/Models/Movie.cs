@@ -10,7 +10,8 @@ namespace ApiMovies.Models
         public string Name { get; set; }
         public string Description { get; set; }
         public int Duration { get; set; }
-        public string ImageRoute { get; set; }
+        public string? ImageRoute { get; set; }
+        public string? LocalImageRoute { get; set; }
         public enum ClassificationType
         {
             Seven, Thirteen, Sixteen, Eighteen

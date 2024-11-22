@@ -174,6 +174,9 @@ app.UseCors("AllowAll");
 
 app.UseHttpsRedirection();
 
+// Static files support
+app.UseStaticFiles();
+
 // Middleware para manejar autenticacion
 app.UseAuthentication();
 app.UseAuthorization();
