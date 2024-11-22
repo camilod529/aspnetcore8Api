@@ -2,6 +2,8 @@
 using ApiMovies.Models;
 using ApiMovies.Models.Dtos;
 using ApiMovies.Repository.IRepository;
+using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -14,35 +16,43 @@ namespace ApiMovies.Repository
     {
         private readonly ApplicationDbContext _db;
         private readonly string _key;
-        public UserRepository(ApplicationDbContext db, IConfiguration config)
+        private readonly UserManager<AppUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IMapper _mapper;
+        public UserRepository(ApplicationDbContext db, IConfiguration config, UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager, IMapper mapper)
         {
             _db = db;
             _key = config.GetValue<string>("ApiSettings:secret");
+            _userManager = userManager;
+            _roleManager = roleManager;
+            _mapper = mapper;
         }
 
-        public User GetUserById(int id)
+        public AppUser GetUserById(string id)
         {
-            return _db.Users.FirstOrDefault(x => x.Id == id);
+            return _db.AppUsers.FirstOrDefault(x => x.Id == id);
         }
 
-        public ICollection<User> GetUsers()
+        public ICollection<AppUser> GetUsers()
         {
-            return _db.Users.OrderBy(u => u.Name).ToList();
+            return _db.AppUsers.OrderBy(u => u.UserName).ToList();
         }
 
         public bool IsUniqueUser(string username)
         {
-            var user = _db.Users.FirstOrDefault(u => u.UserName == username);
+            var user = _db.AppUsers.FirstOrDefault(u => u.UserName == username);
             return user == null;
         }
 
         public async Task<LoginResponseDto> Login(LoginUserDto loginUserDto)
         {
-            var encryptedPassword = Getmd5(loginUserDto.Password);
-            var user = _db.Users.FirstOrDefault(u => u.UserName == loginUserDto.UserName && u.Password == encryptedPassword);
+            //var encryptedPassword = Getmd5(loginUserDto.Password);
+            var user = _db.AppUsers.FirstOrDefault(u => u.UserName.ToLower() == loginUserDto.UserName.ToLower());
+
+            bool isValid = await _userManager.CheckPasswordAsync(user, loginUserDto.Password);
 
             // Validate if user not correct combination of username and password
-            if (user == null)
+            if (user == null || !isValid)
             {
                 return new LoginResponseDto()
                 {
@@ -51,6 +61,7 @@ namespace ApiMovies.Repository
                 };
             }
 
+            var roles = await _userManager.GetRolesAsync(user);
             var jwtTokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_key);
 
@@ -59,7 +70,7 @@ namespace ApiMovies.Repository
                 Subject = new ClaimsIdentity(
                 [
                     new Claim(ClaimTypes.Name, user.UserName.ToString()),
-                    new Claim(ClaimTypes.Role, user.Role),
+                    new Claim(ClaimTypes.Role, roles.FirstOrDefault()),
                 ]),
                 Expires = DateTime.UtcNow.AddDays(7),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
@@ -70,30 +81,37 @@ namespace ApiMovies.Repository
             LoginResponseDto loginResponseDto = new()
             {
                 Token = jwtTokenHandler.WriteToken(token),
-                User = user,
-                Role = user.Role
+                User = _mapper.Map<UserDataDto>(user),
+                Role = roles.FirstOrDefault(),
             };
 
             return loginResponseDto;
         }
 
-        public async Task<User> Register(CreateUserDto createUserDto)
+        public async Task<UserDataDto> Register(CreateUserDto createUserDto)
         {
-            var encryptedPassword = Getmd5(createUserDto.Password);
-
-            User user = new()
+            // var encryptedPassword = Getmd5(createUserDto.Password);
+            AppUser user = new()
             {
                 UserName = createUserDto.UserName,
-                Password = encryptedPassword,
-                Name = createUserDto.Name,
-                Role = createUserDto.Role,
-                CreatedAt = DateTime.Now,
+                Email = createUserDto.UserName,
+                NormalizedEmail = createUserDto.UserName.ToUpper(),
+                FullName = createUserDto.Name,
             };
 
-            _db.Users.Add(user);
-            await _db.SaveChangesAsync();
-             user.Password = encryptedPassword;
-            return user;
+            var result = await _userManager.CreateAsync(user, createUserDto.Password);
+            if(result.Succeeded)
+            {
+                if (!_roleManager.RoleExistsAsync("Admin").GetAwaiter().GetResult())
+                {
+                    await _roleManager.CreateAsync(new IdentityRole("Admin"));
+                    await _roleManager.CreateAsync(new IdentityRole("User"));
+                }
+                await _userManager.AddToRoleAsync(user, "Admin");
+                var returnUser = _db.AppUsers.FirstOrDefault(u => u.UserName == createUserDto.UserName);
+                return _mapper.Map<UserDataDto>(returnUser);
+            }
+            return new UserDataDto();
         }
 
         // Encrypt password

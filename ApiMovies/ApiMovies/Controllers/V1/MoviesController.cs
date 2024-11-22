@@ -60,7 +60,7 @@ namespace ApiMovies.Controllers.V1
         }
 
         [HttpPost]
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(MovieDto))]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -96,7 +96,7 @@ namespace ApiMovies.Controllers.V1
         }
 
         [HttpPatch("{id:int}", Name = "UpdatePatchMovie")]
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -140,7 +140,7 @@ namespace ApiMovies.Controllers.V1
         }
 
         [HttpDelete("{id:int}", Name = "DeleteMovie")]
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]

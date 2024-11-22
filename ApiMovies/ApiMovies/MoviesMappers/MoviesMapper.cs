@@ -15,6 +15,8 @@ namespace ApiMovies.MoviesMappers
             CreateMap<Movie, CreateMovieDto>().ReverseMap();
             CreateMap<Movie, UpdateMovieDto>().ReverseMap();
             CreateMap<User, UserDto>().ReverseMap();
+            CreateMap<AppUser, UserDto>().ReverseMap();
+            CreateMap<AppUser, UserDataDto>().ReverseMap();
         }
     }
 }

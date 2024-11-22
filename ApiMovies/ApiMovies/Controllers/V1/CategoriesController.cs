@@ -63,7 +63,7 @@ namespace ApiMovies.Controllers.V1
         }
 
         [HttpPost]
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "Admin")]
         [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -99,7 +99,7 @@ namespace ApiMovies.Controllers.V1
         }
 
         [HttpPatch("{id:int}", Name = "UpdatePatchCategory")]
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -143,7 +143,7 @@ namespace ApiMovies.Controllers.V1
         }
 
         [HttpPut("{id:int}", Name = "UpdatePutCategory")]
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -186,14 +186,14 @@ namespace ApiMovies.Controllers.V1
             return NoContent();
         }
 
-        [HttpDelete("{id:int}", Name = "DeletetCategory")]
-        [Authorize(Roles = "admin")]
+        [HttpDelete("{id:int}", Name = "DeleteCategory")]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult DeletetCategory(int id)
+        public IActionResult DeleteCategory(int id)
         {
             if (!_categoryRepository.CategoryExists(id))
             {

@@ -1,9 +1,11 @@
 using ApiMovies.Data;
+using ApiMovies.Models;
 using ApiMovies.MoviesMappers;
 using ApiMovies.Repository;
 using ApiMovies.Repository.IRepository;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -36,6 +38,9 @@ apiVersioningBuilder.AddApiExplorer(option =>
 // Add services to the container.
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("SqlConnection")));
+
+// Identity support
+builder.Services.AddIdentity<AppUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
 
 // cache soport
 builder.Services.AddResponseCaching();

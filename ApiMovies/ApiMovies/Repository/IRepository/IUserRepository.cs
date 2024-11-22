@@ -5,10 +5,10 @@ namespace ApiMovies.Repository.IRepository
 {
     public interface IUserRepository
     {
-        ICollection<User> GetUsers();
-        User GetUserById(int id);
+        ICollection<AppUser> GetUsers();
+        AppUser GetUserById(string id);
         bool IsUniqueUser(string username);
         Task<LoginResponseDto> Login(LoginUserDto loginUserDto);
-        Task<User> Register(CreateUserDto createUserDto);
+        Task<UserDataDto> Register(CreateUserDto createUserDto);
     }
 }
