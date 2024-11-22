@@ -1,11 +1,9 @@
 ﻿using ApiMovies.Models;
 using ApiMovies.Models.Dtos;
-using ApiMovies.Repository;
 using ApiMovies.Repository.IRepository;
 using Asp.Versioning;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApiMovies.Controllers.V1
@@ -66,7 +64,7 @@ namespace ApiMovies.Controllers.V1
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult CreateMovie([FromBody] CreateMovieDto createMovieDto)
+        public IActionResult CreateMovie([FromForm] CreateMovieDto createMovieDto)
         {
             if (!ModelState.IsValid)
             {
@@ -86,11 +84,37 @@ namespace ApiMovies.Controllers.V1
 
             var movie = _mapper.Map<Movie>(createMovieDto);
 
-            if (!_movieRepository.CreateMovie(movie))
+            //if (!_movieRepository.CreateMovie(movie))
+            //{
+            //    ModelState.AddModelError("", $"Algo salio mal guardando el registro {movie.Name}");
+            //    return BadRequest(ModelState);
+            //}
+            // File upload
+            if (createMovieDto.Image != null)
             {
-                ModelState.AddModelError("", $"Algo salio mal guardando el registro {movie.Name}");
-                return BadRequest(ModelState);
+                string fileName = movie.Id + Guid.NewGuid().ToString() + Path.GetExtension(createMovieDto.Image.FileName);
+                string fileRoute = @"Media\MovieImages\" + fileName;
+                string fileRouteToSave = Path.Combine(Directory.GetCurrentDirectory(), fileRoute);
+                FileInfo file = new FileInfo(fileRouteToSave);
+                if (file.Exists)
+                {
+                    file.Delete();
+                }
+                using (var fileStream = new FileStream(fileRouteToSave, FileMode.Create))
+                {
+                    createMovieDto.Image.CopyTo(fileStream);
+                }
+
+                var baseUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.Value}{HttpContext.Request.PathBase.Value}";
+                movie.ImageRoute = baseUrl + "/MovieImages/" + fileName;
+                movie.LocalImageRoute = fileRoute;
             }
+            else
+            {
+                movie.ImageRoute = "https://placehold.co/600x400";
+            }
+
+            _movieRepository.CreateMovie(movie);
 
             return CreatedAtRoute("GetMovieById", new { id = movie.Id }, movie);
         }
