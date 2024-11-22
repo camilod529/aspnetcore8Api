@@ -221,20 +221,25 @@ namespace ApiMovies.Controllers.V1
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult GetMoviesInCategory(int categoryId)
         {
-            var movies = _movieRepository.GetMoviesByCategory(categoryId);
-
-            if (movies == null)
+            try
             {
-                return NotFound();
+                var movies = _movieRepository.GetMoviesByCategory(categoryId);
+
+                if (movies == null || movies.Count == 0)
+                {
+                    return NotFound($"No se encontraron peliculas en la categoria con ID {categoryId}");
+                }
+
+                var moviesDto = movies.Select(x => _mapper.Map<MovieDto>(x)).ToList();
+
+                return Ok(moviesDto);
+
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Error interno de la aplicacion.");
             }
 
-            var moviesDto = new List<MovieDto>();
-            foreach (var movie in movies)
-            {
-                moviesDto.Add(_mapper.Map<MovieDto>(movie));
-            }
-
-            return Ok(moviesDto);
         }
 
         // Asi se crean peticiones para detectar queryParams
@@ -248,12 +253,14 @@ namespace ApiMovies.Controllers.V1
         {
             try
             {
-                var res = _movieRepository.SearchMovie(query);
-                if (res.Count != 0)
+                ICollection<Movie> movies = _movieRepository.SearchMovie(query);
+                if (movies.Count == 0)
                 {
-                    return Ok(res);
+                    return NotFound($"No se encontro pelicula con el termino {query}");
                 }
-                return NotFound();
+
+                var moviesDto =_mapper.Map<List<MovieDto>>(movies);
+                return Ok(moviesDto);
             }
             catch (Exception)
             {
