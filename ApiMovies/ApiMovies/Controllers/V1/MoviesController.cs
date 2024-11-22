@@ -126,7 +126,7 @@ namespace ApiMovies.Controllers.V1
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public IActionResult UpdatePatchMovie(int id, [FromBody] UpdateMovieDto updateMovieDto)
+        public IActionResult UpdatePatchMovie(int id, [FromForm] UpdateMovieDto updateMovieDto)
         {
             if (!ModelState.IsValid)
             {
@@ -154,12 +154,37 @@ namespace ApiMovies.Controllers.V1
             _mapper.Map(updateMovieDto, existingMovie);
             existingMovie.UpdatedAt = DateTime.Now;
 
-            if (!_movieRepository.UpdateMovie(existingMovie))
+            //if (!_movieRepository.UpdateMovie(existingMovie))
+            //{
+            //    ModelState.AddModelError("message", $"Algo salio mal actualizando el registro {existingMovie.Name}");
+            //    return StatusCode(500, ModelState);
+            //}
+            // File upload update
+            if (updateMovieDto.Image != null)
             {
-                ModelState.AddModelError("message", $"Algo salio mal actualizando el registro {existingMovie.Name}");
-                return StatusCode(500, ModelState);
+                string fileName = existingMovie.Id + Guid.NewGuid().ToString() + Path.GetExtension(updateMovieDto.Image.FileName);
+                string fileRoute = @"Media\MovieImages\" + fileName;
+                string fileRouteToSave = Path.Combine(Directory.GetCurrentDirectory(), fileRoute);
+                FileInfo file = new(fileRouteToSave);
+                if (file.Exists)
+                {
+                    file.Delete();
+                }
+                using (var fileStream = new FileStream(fileRouteToSave, FileMode.Create))
+                {
+                    updateMovieDto.Image.CopyTo(fileStream);
+                }
+
+                var baseUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.Value}{HttpContext.Request.PathBase.Value}";
+                existingMovie.ImageRoute = baseUrl + "/MovieImages/" + fileName;
+                existingMovie.LocalImageRoute = fileRoute;
+            }
+            else
+            {
+                existingMovie.ImageRoute = "https://placehold.co/600x400";
             }
 
+            _movieRepository.UpdateMovie(existingMovie);
             return NoContent();
         }
 
